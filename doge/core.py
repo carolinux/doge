@@ -212,7 +212,7 @@ class Doge(object):
         self.words.extend([
             match.group(0)
             for line in stdin_lines
-            for match in rx_word.finditer(line.lower())
+            for match in rx_word.finditer(line.lower()) if match.group(0) not in wow.STOPWORDS
         ])
 
         return True
@@ -328,6 +328,7 @@ class TTYHandler(object):
         try:
             import fcntl
             import termios
+
             return struct.unpack(
                 'hh',
                 fcntl.ioctl(
