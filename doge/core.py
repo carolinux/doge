@@ -25,7 +25,12 @@ class Doge(object):
         self.tty = tty
         self.ns = ns
         self.doge_path = join(ROOT, ns.doge_path or DEFAULT_DOGE)
-        self.words = wow.WORDS
+        if ns.frequency:
+            # such frequency based
+            self.words = wow.FrequencyBasedDogeDeque(*wow.WORD_LIST)
+        else:
+            self.words = wow.DogeDeque(*wow.WORD_LIST)
+
 
     def setup(self):
         # Setup seasonal data
@@ -411,6 +416,13 @@ def setup_arguments():
         help='wow shibe season congrate',
         choices=sorted(wow.SEASONS.keys()) + ['none']
     )
+
+    parser.add_argument(
+        '-f','--frequency',
+        help='such frequency based',
+        action='store_true'
+    )
+
 
     return parser
 

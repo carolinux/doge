@@ -68,6 +68,46 @@ class DogeDeque(deque):
         super(DogeDeque, self).__init__(args)
 
 
+class FrequencyBasedDogeDeque(deque):
+    def __init__(self, *args):
+        self.index = 0
+        args = list(args)
+        # sort words by frequency
+        args = (sorted(set(args), key=lambda x: args.count(x)))
+        super(FrequencyBasedDogeDeque, self).__init__(args)
+
+    def shuffle(self):
+        pass
+
+    def get(self):
+        """
+        Get one item and prepare to get an item with lower rank on the next call.
+
+        """
+
+        if self.index >= len(self):
+            self.index = 0
+
+        step = random.randint(1, min(2, len(self)))
+
+        try:
+            res = self[0]
+            self.index += step
+            self.rotate(step)
+            return res
+        except:
+            return "wow"
+
+    def extend(self, iterable):
+
+        existing = list(self)
+        merged = existing + list(iterable)
+        self.clear()
+        self.index = 0
+        new_to_add = (sorted(set(merged), key=lambda x: merged.count(x)))
+        super(FrequencyBasedDogeDeque, self).__init__(new_to_add)
+
+
 PREFIXES = DogeDeque(
     'wow', 'such', 'very', 'so much', 'many', 'lol', 'beautiful',
     'all the', 'the', 'most', 'very much', 'pretty', 'so',
@@ -75,12 +115,11 @@ PREFIXES = DogeDeque(
 
 # Please keep in mind that this particular shibe is a terminal hax0r shibe,
 # and the words added should be in that domain
-WORDS = DogeDeque(
-    'computer', 'hax0r', 'code', 'data', 'internet', 'server',
-    'hacker', 'terminal', 'doge', 'shibe', 'program', 'free software',
-    'web scale', 'monads', 'git', 'daemon', 'loop', 'pretty', 'uptime',
-    'thread safe', 'posix',
-)
+WORD_LIST = ['computer', 'hax0r', 'code', 'data', 'internet', 'server',
+             'hacker', 'terminal', 'doge', 'shibe', 'program', 'free software',
+             'web scale', 'monads', 'git', 'daemon', 'loop', 'pretty', 'uptime',
+             'thread safe', 'posix']
+WORDS = DogeDeque(WORD_LIST)
 
 SUFFIXES = DogeDeque(
     'wow', 'lol', 'hax', 'plz', 'lvl=100'
