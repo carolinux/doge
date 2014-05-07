@@ -20,7 +20,7 @@ class DogeDeque(deque):
 
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         self.index = 0
         args = list(args)
         random.shuffle(args)
@@ -69,8 +69,12 @@ class DogeDeque(deque):
 
 
 class FrequencyBasedDogeDeque(deque):
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         self.index = 0
+        if "step" in kwargs:
+            self.step = kwargs["step"]
+        else:
+            self.step = 2
         args = list(args)
         # sort words by frequency
         args = (sorted(set(args), key=lambda x: args.count(x)))
@@ -84,19 +88,19 @@ class FrequencyBasedDogeDeque(deque):
         Get one item and prepare to get an item with lower rank on the next call.
 
         """
+        if len(self) < 1:
+            return "wow"
 
         if self.index >= len(self):
             self.index = 0
 
-        step = random.randint(1, min(2, len(self)))
+        step = random.randint(1, min(self.step, len(self)))
 
-        try:
-            res = self[0]
-            self.index += step
-            self.rotate(step)
-            return res
-        except:
-            return "wow"
+        res = self[0]
+        self.index += step
+        self.rotate(step)
+        return res
+
 
     def extend(self, iterable):
 

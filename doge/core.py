@@ -27,7 +27,7 @@ class Doge(object):
         self.doge_path = join(ROOT, ns.doge_path or DEFAULT_DOGE)
         if ns.frequency:
             # such frequency based
-            self.words = wow.FrequencyBasedDogeDeque(*wow.WORD_LIST)
+            self.words = wow.FrequencyBasedDogeDeque(*wow.WORD_LIST, step=ns.step)
         else:
             self.words = wow.DogeDeque(*wow.WORD_LIST)
 
@@ -217,7 +217,9 @@ class Doge(object):
         self.words.extend([
             match.group(0)
             for line in stdin_lines
-            for match in rx_word.finditer(line.lower()) if match.group(0) not in wow.STOPWORDS
+            for match in rx_word.finditer(line.lower()) if len(match.group(0)) >= self.ns.min_length and
+                                                           (not self.ns.filter_stopwords or match.group(
+                                                               0) not in wow.STOPWORDS)
         ])
 
         return True
@@ -418,11 +420,30 @@ def setup_arguments():
     )
 
     parser.add_argument(
-        '-f','--frequency',
+        '-f', '--frequency',
         help='such frequency based',
         action='store_true'
     )
 
+    parser.add_argument(
+        '--step',
+        help='beautiful step',  # how much to step between ranks in FrequencyBasedDogeDeque
+        type=int,
+        default=2,
+    )
+
+    parser.add_argument(
+        '--min_length',
+        help='pretty minimum',  # minimum length of a word
+        type=int,
+        default=1,
+    )
+
+    parser.add_argument(
+        '-s', '--filter_stopwords',
+        help='many words lol',
+        action='store_true'
+    )
 
     return parser
 
