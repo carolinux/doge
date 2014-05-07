@@ -119,7 +119,7 @@ WORD_LIST = ['computer', 'hax0r', 'code', 'data', 'internet', 'server',
              'hacker', 'terminal', 'doge', 'shibe', 'program', 'free software',
              'web scale', 'monads', 'git', 'daemon', 'loop', 'pretty', 'uptime',
              'thread safe', 'posix']
-WORDS = DogeDeque(WORD_LIST)
+WORDS = DogeDeque(*WORD_LIST)
 
 SUFFIXES = DogeDeque(
     'wow', 'lol', 'hax', 'plz', 'lvl=100'
