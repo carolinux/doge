@@ -117,6 +117,8 @@ PREFIXES = DogeDeque(
     'all the', 'the', 'most', 'very much', 'pretty', 'so',
 )
 
+VOWELS =['a','e','i','o','u','y']
+
 # Please keep in mind that this particular shibe is a terminal hax0r shibe,
 # and the words added should be in that domain
 WORD_LIST = ['computer', 'hax0r', 'code', 'data', 'internet', 'server',
@@ -128,6 +130,7 @@ WORDS = DogeDeque(*WORD_LIST)
 SUFFIXES = DogeDeque(
     'wow', 'lol', 'hax', 'plz', 'lvl=100'
 )
+REPLACE = [('.*er$','er$','r'),('.*ss.*','ss','s'),('.{4,}e$','e$',''),('.+ea.*','ea','ee')]
 
 # A subset of the 255 color cube with the darkest colors removed. This is
 # suited for use on dark terminals. Lighter colors are still present so some

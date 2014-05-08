@@ -11,10 +11,13 @@ import traceback
 import argparse
 import subprocess as sp
 import unicodedata
+import re
 
 from os.path import dirname, join
 
-from doge import wow
+#from doge
+import wow
+import wow
 
 ROOT = join(dirname(__file__), 'static')
 DEFAULT_DOGE = 'doge.txt'
@@ -70,6 +73,7 @@ class Doge(object):
 
         # Apply the text around Shibe
         self.apply_text()
+        #print self.lines
 
     def setup_seasonal(self):
         """
@@ -270,7 +274,58 @@ class DogeMessage(object):
         self.doge = doge
         self.tty = doge.tty
         self.occupied = occupied
-        self.word = word
+        self.word = self.dogeify(word)
+
+    def substitut(self,word, pattrn,pattern_to_replace, such_replace):
+
+        replaced = False
+        if re.match(pattrn,word) is not None:
+            print word,pattrn
+            word = re.sub(pattern_to_replace,such_replace,word)
+            replaced = True
+
+        return word, replaced
+
+    def switch_consecutive_vowels(self,word):
+
+        chars = []
+        switched = False
+        for i, c in enumerate(word):
+            if i > 0 and not switched and word[i - 1] in wow.VOWELS and word[i] in wow.VOWELS:
+
+                add_after = chars[-1]
+                chars = chars[:-1]
+                chars.append(word[i])
+                chars.append(add_after)
+                switched = True
+            else:
+                chars.append(word[i])
+
+        return ''.join(c for c in chars)
+
+    def dogeify(self, word):
+        """
+         misspell word, ie  server -> servr, clean -> claen (impure dogespeak by some, so much moderation)
+         http://the-toast.net/2014/02/06/linguist-explains-grammar-doge-wow/
+         http://allthingslinguistic.com/post/75803057891/much-doge-so-linguistics-wow-i-have-written-a
+        """
+        print word
+        PROBABILITY = 1
+
+        for tuple in wow.REPLACE:
+            if random.choice(range(int(1.0/PROBABILITY))) == 0 :
+                word, replaced = self.substitut(word,*tuple)
+                if replaced:
+                    print "after...:",word
+                    return word
+        if random.choice(range(int(1.0/PROBABILITY))) == 0 :
+            print "switching vowels"
+            res = self.switch_consecutive_vowels(word)
+        else:
+            res = word
+        print "after:",res
+        return res
+
 
     def generate(self):
         if self.word == 'wow':
@@ -283,6 +338,8 @@ class DogeMessage(object):
             # Seldomly add a suffix as well.
             if random.choice(range(15)) == 0:
                 msg += u' {0}'.format(wow.SUFFIXES.get())
+
+        self.msg = msg
 
         # Calculate the maximum possible spacer
         interval = self.tty.width - onscreen_len(msg)
