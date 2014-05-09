@@ -114,7 +114,7 @@ class FrequencyBasedDogeDeque(deque):
 
 PREFIXES = DogeDeque(
     'wow', 'such', 'very', 'so much', 'many', 'lol', 'beautiful',
-    'all the', 'the', 'most', 'very much', 'pretty', 'so',
+    'all the', 'the', 'most', 'very much', 'pretty', 'so', 'amaze'
 )
 
 VOWELS =['a','e','i','o','u','y']
@@ -130,7 +130,9 @@ WORDS = DogeDeque(*WORD_LIST)
 SUFFIXES = DogeDeque(
     'wow', 'lol', 'hax', 'plz', 'lvl=100'
 )
-REPLACE = [('.*er$','er$','r'),('.*ss.*','ss','s'),('.{4,}e$','e$',''),('.+ea.*','ea','ee')]
+REPLACE = [('.*er$','er$','r',1.0),('.{3,}ss.*','ss','s',1.0),
+           ('.*[^aeiouy][^aeiouy]e$','e$','',1.0),
+           ('.+ea.*','ea','ee',0.4), ('.{3,}y$','y$','i',0.8)]
 
 # A subset of the 255 color cube with the darkest colors removed. This is
 # suited for use on dark terminals. Lighter colors are still present so some

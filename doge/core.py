@@ -311,14 +311,15 @@ class DogeMessage(object):
         """
         print word
         PROBABILITY = 1
+        PROBABILITY_SWITCH = 0.2
 
         for tuple in wow.REPLACE:
-            if random.choice(range(int(1.0/PROBABILITY))) == 0 :
-                word, replaced = self.substitut(word,*tuple)
+            if random.choice(range(int(1.0/tuple[-1]))) == 0 :
+                word, replaced = self.substitut(word,*tuple[:-1])
                 if replaced:
                     print "after...:",word
                     return word
-        if random.choice(range(int(1.0/PROBABILITY))) == 0 :
+        if random.choice(range(int(1.0/PROBABILITY_SWITCH))) == 0 :
             print "switching vowels"
             res = self.switch_consecutive_vowels(word)
         else:
