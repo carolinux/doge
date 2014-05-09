@@ -17,7 +17,7 @@ from os.path import dirname, join
 
 #from doge
 import wow
-import wow
+
 
 ROOT = join(dirname(__file__), 'static')
 DEFAULT_DOGE = 'doge.txt'
@@ -30,10 +30,10 @@ class Doge(object):
         self.doge_path = join(ROOT, ns.doge_path or DEFAULT_DOGE)
         if ns.frequency:
             # such frequency based
-            self.words = wow.FrequencyBasedDogeDeque(*wow.WORD_LIST, step=ns.step)
+            self.words = \
+                wow.FrequencyBasedDogeDeque(*wow.WORD_LIST, step=ns.step)
         else:
             self.words = wow.DogeDeque(*wow.WORD_LIST)
-
 
     def setup(self):
         # Setup seasonal data
@@ -73,7 +73,6 @@ class Doge(object):
 
         # Apply the text around Shibe
         self.apply_text()
-        #print self.lines
 
     def setup_seasonal(self):
         """
@@ -91,7 +90,7 @@ class Doge(object):
 
         # If we've specified another doge or no doge at all, it does not make
         # sense to use seasons.
-        if not self.ns.doge_path is None and not self.ns.no_shibe:
+        if self.ns.doge_path is not None and not self.ns.no_shibe:
             return
 
         now = datetime.datetime.now()
@@ -198,6 +197,10 @@ class Doge(object):
 
         self.words.extend(map(func, ret))
 
+    def filter_words(self, words, stopwords, min_length):
+        return [word for word in words if
+                len(word) >= min_length and word not in stopwords]
+
     def get_stdin_data(self):
         """
         Get words from stdin.
@@ -217,14 +220,15 @@ class Doge(object):
 
         # If we have stdin data, we should remove everything else!
         self.words.clear()
+        word_list = [match.group(0)
+                     for line in stdin_lines
+                     for match in rx_word.finditer(line.lower())]
+        if self.ns.filter_stopwords:
+            word_list = self.filter_words(
+                word_list, stopwords=wow.STOPWORDS,
+                min_length=self.ns.min_length)
 
-        self.words.extend([
-            match.group(0)
-            for line in stdin_lines
-            for match in rx_word.finditer(line.lower()) if len(match.group(0)) >= self.ns.min_length and
-                                                           (not self.ns.filter_stopwords or match.group(
-                                                               0) not in wow.STOPWORDS)
-        ])
+        self.words.extend(word_list)
 
         return True
 
@@ -276,22 +280,23 @@ class DogeMessage(object):
         self.occupied = occupied
         self.word = self.dogeify(word)
 
-    def substitut(self,word, pattrn,pattern_to_replace, such_replace):
+    def substitut(self, word, pattrn, pattern_to_replace, such_replace):
 
         replaced = False
-        if re.match(pattrn,word) is not None:
-            print word,pattrn
-            word = re.sub(pattern_to_replace,such_replace,word)
+        if re.match(pattrn, word) is not None:
+            print word, pattrn
+            word = re.sub(pattern_to_replace, such_replace, word)
             replaced = True
 
         return word, replaced
 
-    def switch_consecutive_vowels(self,word):
+    def switch_consecutive_vowels(self, word):
 
         chars = []
         switched = False
         for i, c in enumerate(word):
-            if i > 0 and not switched and word[i - 1] in wow.VOWELS and word[i] in wow.VOWELS:
+            if i > 0 and not switched \
+                    and word[i - 1] in wow.VOWELS and word[i] in wow.VOWELS:
 
                 add_after = chars[-1]
                 chars = chars[:-1]
@@ -305,7 +310,8 @@ class DogeMessage(object):
 
     def dogeify(self, word):
         """
-         misspell word, ie  server -> servr, clean -> claen (impure dogespeak by some, so much moderation)
+         misspell word, ie  server -> servr, clean -> claen
+          (impure dogespeak by some, so much moderation)
          http://the-toast.net/2014/02/06/linguist-explains-grammar-doge-wow/
          http://allthingslinguistic.com/post/75803057891/much-doge-so-linguistics-wow-i-have-written-a
         """
@@ -314,19 +320,18 @@ class DogeMessage(object):
         PROBABILITY_SWITCH = 0.2
 
         for tuple in wow.REPLACE:
-            if random.choice(range(int(1.0/tuple[-1]))) == 0 :
-                word, replaced = self.substitut(word,*tuple[:-1])
+            if random.choice(range(int(1.0 / tuple[-1]))) == 0:
+                word, replaced = self.substitut(word, *tuple[:-1])
                 if replaced:
-                    print "after...:",word
+                    print "after...:", word
                     return word
-        if random.choice(range(int(1.0/PROBABILITY_SWITCH))) == 0 :
+        if random.choice(range(int(1.0 / PROBABILITY_SWITCH))) == 0:
             print "switching vowels"
             res = self.switch_consecutive_vowels(word)
         else:
             res = word
-        print "after:",res
+        print "after:", res
         return res
-
 
     def generate(self):
         if self.word == 'wow':
@@ -485,7 +490,8 @@ def setup_arguments():
 
     parser.add_argument(
         '--step',
-        help='beautiful step',  # how much to step between ranks in FrequencyBasedDogeDeque
+        help='beautiful step',  # how much to step
+        #  between ranks in FrequencyBasedDogeDeque
         type=int,
         default=2,
     )
